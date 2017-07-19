@@ -109,7 +109,7 @@ public class EventListener implements Listener {
 			if(GameManager.playerIsInGame(damaged.getUniqueId())) {
 				Role damagedRole = GameManager.getPlayerRoleByUUID(damaged.getUniqueId());
 				Role damagerRole = GameManager.getPlayerRoleByUUID(damager.getUniqueId());
-				if(damagerRole.getRoleName() == "Murderer") {
+				if(damagerRole.getRoleType() == Role.Type.MURDERER) {
 					if(damager.getInventory().getItemInMainHand().getType() == Material.IRON_SWORD) {
 						damaged.setGameMode(GameMode.SPECTATOR);
 						damaged.sendTitle(ChatColor.RED+"You died!",ChatColor.RED+"The murderer killed you!",20,100,20);
@@ -125,10 +125,10 @@ public class EventListener implements Listener {
 				Player damaged = (Player) e.getEntity();
 				Role damagedRole = GameManager.getPlayerRoleByUUID(damaged.getUniqueId());
 				if(shooterRole != null) {
-					if(shooterRole.getRoleName() == "Detective") {
+					if(shooterRole.getRoleType() == Role.Type.DETECTIVE) {
 						//Detective shot an arrow
 						shooter.getInventory().addItem(new ItemStack(Material.ARROW,1));
-						if(damagedRole.getRoleName() != "Murderer") {
+						if(damagedRole.getRoleType() != Role.Type.MURDERER) {
 							//Detective shot an innocent
 							
 							shooter.setGameMode(GameMode.SPECTATOR);
