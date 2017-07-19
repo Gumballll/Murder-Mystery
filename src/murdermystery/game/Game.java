@@ -65,7 +65,7 @@ public class Game {
 	public void displayRoles() {
 		for(UUID uuid : users) {
 			GamePlayer player = players.get(uuid);
-			if(player.getRole().getRoleId() != 0) {
+			if(player.getRole().getRoleType() != Role.Type.INNOCENT) {
 				player.getPlayer().sendMessage("You are the "+player.getRole().getRoleName());
 				player.getPlayer().sendTitle(ChatColor.GOLD+"You are the "+player.getRole().getColor()+player.getRole().getRoleName(), ChatColor.GOLD+player.getRole().getObjective(),20,100,20);
 			} else {
