@@ -5,6 +5,6 @@ import org.bukkit.Material;
 
 public class Dead extends Role {
 	public Dead() {
-		super("Dead",3,Material.AIR,"",ChatColor.GRAY);
+		super("Dead",Role.Type.DEAD,Material.AIR,"",ChatColor.GRAY);
 	}
 }
