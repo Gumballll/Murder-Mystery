@@ -6,15 +6,22 @@ import org.bukkit.inventory.ItemStack;
 
 public class Role {
 	
+	public static enum Type {
+		INNOCENT,
+		DETECTIVE,
+		MURDERER,
+		DEAD;
+	}
+	
 	String rolename;
-	int roleid;
+	Type roleType;
 	ItemStack item;
 	String objective;
 	ChatColor color;
 	
-	public Role(String name,int id,Material i,String o,ChatColor c) {
+	public Role(String name,Role.Type roleAsType,Material i,String o,ChatColor c) {
 		this.rolename = name;
-		this.roleid = id;
+		this.roleType = roleAsType;
 		this.item = new ItemStack(i,1);
 		this.color = c;
 		this.objective = o;
@@ -28,8 +35,8 @@ public class Role {
 		return this.rolename;
 	}
 	
-	public int getRoleId() {
-		return this.roleid;
+	public Role.Type getRoleType() {
+		return this.roleType;
 	}
 	
 	public String getObjective() {

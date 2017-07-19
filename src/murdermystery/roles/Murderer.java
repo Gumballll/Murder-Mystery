@@ -5,6 +5,6 @@ import org.bukkit.Material;
 
 public class Murderer extends Role {
 	public Murderer() {
-		super("Murderer",2,Material.IRON_SWORD,"Kill everyone!",ChatColor.RED);
+		super("Murderer",Role.Type.MURDERER,Material.IRON_SWORD,"Kill everyone!",ChatColor.RED);
 	}
 }
