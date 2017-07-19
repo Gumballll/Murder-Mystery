@@ -18,6 +18,7 @@ import murdermystery.maps.Map;
 import murdermystery.roles.Detective;
 import murdermystery.roles.Innocent;
 import murdermystery.roles.Murderer;
+import murdermystery.roles.Role;
 
 public class Game {
 	public HashMap<UUID,GamePlayer> players = new HashMap<UUID,GamePlayer>();
