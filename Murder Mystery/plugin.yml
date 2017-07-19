@@ -1,0 +1,9 @@
+main: murdermystery.Main
+name: Murder Mystery
+version: 1.0
+author: Gumballll
+description: MM
+commands:
+  npc:
+    description: Modify NPCs
+    usage: /npc

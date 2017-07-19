@@ -28,13 +28,12 @@ public class Game {
 	public Integer id;
 	public boolean ingame = false;
 	public Random random = new Random();
-	public Integer maxplayers;
+	public Integer maxplayers = 2;
 	
-	public Game(Map m,Integer id,World world,Integer maxplayers) {
+	public Game(Map m,Integer id,World world) {
 		this.map = m;
 		this.id = id;
 		this.world = world;
-		this.maxplayers = maxplayers;
 	}
 	
 	public boolean addUser(UUID id) {
@@ -47,7 +46,6 @@ public class Game {
 				Location loc = new Location(world,map.spawnPoint[0],map.spawnPoint[1],map.spawnPoint[2]);
 				Bukkit.getPlayer(id).teleport(loc);
 				Bukkit.getPlayer(id).sendMessage(ChatColor.LIGHT_PURPLE+"Teleporting you to a game...");
-				Bukkit.getPlayer(id).setGameMode(GameMode.ADVENTURE);
 				Bukkit.getPlayer(id).getInventory().clear();
 				if(users.size() == maxplayers) {
 					startGame();
@@ -65,12 +63,12 @@ public class Game {
 	public void displayRoles() {
 		for(UUID uuid : users) {
 			GamePlayer player = players.get(uuid);
-			if(player.getRole().getRoleType() != Role.Type.INNOCENT) {
+			if(player.getRole().getRoleId() != 0) {
 				player.getPlayer().sendMessage("You are the "+player.getRole().getRoleName());
-				player.getPlayer().sendTitle(ChatColor.GOLD+"You are the "+player.getRole().getColor()+player.getRole().getRoleName(), ChatColor.GOLD+player.getRole().getObjective(),20,100,20);
+				player.getPlayer().sendTitle(ChatColor.GOLD+"You are "+player.getRole().getColor()+player.getRole().getRoleName(), ChatColor.GOLD+player.getRole().getObjective(),1,5,1);
 			} else {
 				player.getPlayer().sendMessage(player.getRole().getColor()+"You are "+player.getRole().getRoleName());
-				player.getPlayer().sendTitle("You are "+ChatColor.GREEN+"Innocent", ChatColor.GOLD+"Stay alive as long as possible!",20,100,20);
+				player.getPlayer().sendTitle("You are "+ChatColor.GREEN+"Innocent", ChatColor.GOLD+"Stay alive as long as possible!",1,5,1);
 			}
 		}
 	}
