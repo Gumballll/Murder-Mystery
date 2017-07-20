@@ -68,39 +68,37 @@ public class EventListener implements Listener {
 	
 	@EventHandler
 	public void interactEvent(PlayerInteractEvent e) {
-		if(e.getClickedBlock() != null) {
-			if(GameManager.playerIsInGame(e.getPlayer().getUniqueId())) {
-				if(e.getClickedBlock().getType() == Material.CAULDRON) {
-					Player player = e.getPlayer();
-					if(player.getInventory().contains(Material.EMERALD, 1)) {
-						player.getInventory().remove(new ItemStack(Material.EMERALD,1));
-						ItemStack potion = new ItemStack(Material.POTION,1);
-						PotionMeta meta = (PotionMeta) potion.getItemMeta();
-						PotionData data = new PotionData(getRandomPotion(),false,false);
-						meta.setBasePotionData(data);
-						meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
-						meta.setDisplayName(ChatColor.RESET+"Mystery Potion");
-						meta.setLore(Arrays.asList(ChatColor.GOLD+"This is a Mystery Potion!",ChatColor.RED+"Use at your own risk!"));
-						potion.setItemMeta(meta);
-					} else {
-						player.sendMessage(ChatColor.RED+"You need at least one emerald to use a cauldron!");
-					}
+		if(GameManager.playerIsInGame(e.getPlayer().getUniqueId())) {
+			if(e.getClickedBlock().getType() == Material.CAULDRON) {
+				Player player = e.getPlayer();
+				if(player.getInventory().contains(Material.EMERALD, 1)) {
+					player.getInventory().remove(new ItemStack(Material.EMERALD,1));
+					ItemStack potion = new ItemStack(Material.POTION,1);
+					PotionMeta meta = (PotionMeta) potion.getItemMeta();
+					PotionData data = new PotionData(getRandomPotion(),false,false);
+					meta.setBasePotionData(data);
+					meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+					meta.setDisplayName(ChatColor.RESET+"Mystery Potion");
+					meta.setLore(Arrays.asList(ChatColor.GOLD+"This is a Mystery Potion!",ChatColor.RED+"Use at your own risk!"));
+					potion.setItemMeta(meta);
 				} else {
-					e.setCancelled(true);
-				}
-			} else if(e.getClickedBlock() instanceof Sign) {
-				Sign sign = (Sign) e.getClickedBlock().getState();
-				if(sign.getLine(0).equalsIgnoreCase(ChatColor.RED+"[Murder]")){
-					Game game = GameManager.getOpenGame();
-					if(game != null) {
-						game.addUser(e.getPlayer().getUniqueId());
-					} else {
-						e.getPlayer().sendMessage(ChatColor.RED+"Couldn't find an open game.");
-					}
+					player.sendMessage(ChatColor.RED+"You need at least one emerald to use a cauldron!");
 				}
 			} else {
-			
+				e.setCancelled(true);
 			}
+		} else if(e.getClickedBlock() instanceof Sign) {
+			Sign sign = (Sign) e.getClickedBlock().getState();
+			if(sign.getLine(0).equalsIgnoreCase(ChatColor.RED+"[Murder]")){
+				Game game = GameManager.getOpenGame();
+				if(game != null) {
+					game.addUser(e.getPlayer().getUniqueId());
+				} else {
+					e.getPlayer().sendMessage(ChatColor.RED+"Couldn't find an open game.");
+				}
+			}
+		} else {
+			
 		}
 	}
 	
