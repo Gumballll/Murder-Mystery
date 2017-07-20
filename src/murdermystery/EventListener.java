@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
+import murdermystery.game.Game;
+import murdermystery.game.GameManager;
+import murdermystery.roles.Role;
+
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -25,10 +29,6 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
-
-import murdermystery.game.Game;
-import murdermystery.game.GameManager;
-import murdermystery.roles.Role;
 
 public class EventListener implements Listener {
 	
