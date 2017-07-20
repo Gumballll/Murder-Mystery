@@ -78,7 +78,7 @@ public class GameManager {
 	public static boolean playerIsInGame(UUID uuid) {
 		for(int i=0;i<games.size();i++) {
 			Game game = games.get(i);
-			for(int b=0;b<game.players.size();b++) {;
+			for(int b=0;b<game.players.size();b++) {
 				if(game.players.get(b).getPlayer().getUniqueId() == uuid) {
 					return true;
 				}
