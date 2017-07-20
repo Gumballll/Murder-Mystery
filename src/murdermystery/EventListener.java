@@ -107,11 +107,12 @@ public class EventListener implements Listener {
 			Player damager = (Player) e.getDamager();
 			Player damaged = (Player) e.getEntity();
 			if(GameManager.playerIsInGame(damaged.getUniqueId())) {
-				Role damagedRole = GameManager.getPlayerRoleByUUID(damaged.getUniqueId());
 				Role damagerRole = GameManager.getPlayerRoleByUUID(damager.getUniqueId());
 				if(damagerRole.getRoleType() == Role.Type.MURDERER) {
-					if(damager.getInventory().getItemInMainHand().getType() == Material.IRON_SWORD) {
-						damaged.setGameMode(GameMode.SPECTATOR);
+					Role damagedRole = GameManager.getPlayerRoleByUUID(damaged.getUniqueId());
+					if(damager.getInventory().getItemInMainHand().getType() == Material.IRON_SWORD && damagedRole.getRoleName() != "Dead") {
+						Game game = GameManager.getGameByPlayerUUID(damaged.getUniqueId());
+						game.killPlayer(damaged.getUniqueId());
 						damaged.sendTitle(ChatColor.RED+"You died!",ChatColor.RED+"The murderer killed you!",20,100,20);
 					}
 				}
@@ -128,15 +129,17 @@ public class EventListener implements Listener {
 					if(shooterRole.getRoleType() == Role.Type.DETECTIVE) {
 						//Detective shot an arrow
 						shooter.getInventory().addItem(new ItemStack(Material.ARROW,1));
-						if(damagedRole.getRoleType() != Role.Type.MURDERER) {
+						if(damagedRole.getRoleType() == Role.Type.INNOCENT) {
 							//Detective shot an innocent
 							
-							shooter.setGameMode(GameMode.SPECTATOR);
+							Game game = GameManager.getGameByPlayerUUID(shooter.getUniqueId());
+							game.killPlayer(shooter.getUniqueId());
 							shooter.sendTitle(ChatColor.RED+"You died!", ChatColor.GREEN+"You killed an innocent!",20,100,20);
-							damaged.setGameMode(GameMode.SPECTATOR);
+							game.killPlayer(damaged.getUniqueId());
 							damaged.sendTitle(ChatColor.RED+"You died!",ChatColor.AQUA+"The Detective mistook you for the "+ChatColor.RED+"Murderer!",20,100,20);
-						} else {
-							damaged.setGameMode(GameMode.SPECTATOR);
+						} else if(damagedRole.getRoleType() == Role.Type.MURDERER) {
+							Game game = GameManager.getGameByPlayerUUID(damaged.getUniqueId());
+							game.killPlayer(damaged.getUniqueId());
 							damaged.sendTitle(ChatColor.RED+"You died!", ChatColor.AQUA+"The detective shot you!",20,100,20);
 							shooter.sendTitle(ChatColor.GREEN+"You killed the "+ChatColor.RED+"Murderer!","",20,100,20);
 						}
