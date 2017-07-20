@@ -6,15 +6,16 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Level;
 
+import murdermystery.Main;
+import murdermystery.maps.Acacia;
+import murdermystery.maps.Map;
+import murdermystery.roles.Role;
+
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 
-import murdermystery.Main;
-import murdermystery.maps.Acacia;
-import murdermystery.maps.Map;
-import murdermystery.roles.Role;
 
 public class GameManager {
 	public static HashMap<Integer, Game> games = new HashMap<Integer, Game>();
@@ -30,7 +31,7 @@ public class GameManager {
 	}
 	
 	public static Game newGame(Map map) {
-		Integer gameID = games.size();
+		int gameID = games.size();
 		String mapname = map.baseMapName+Integer.toString(gameID);
 		boolean ok = copyDirectory('.' + File.separator + map.baseMapName, '.' + File.separator + mapname);
 		
@@ -51,7 +52,7 @@ public class GameManager {
 	}
 	
 	public static void removeGame(Game game) {
-		for(Integer i=0;i<games.size();i++) {
+		for(int i=0;i<games.size();i++) {
 			if(games.get(i) == game) {
 				games.remove(i);
 				Bukkit.getServer().unloadWorld(game.world,false);
@@ -75,9 +76,9 @@ public class GameManager {
 	}
 	
 	public static boolean playerIsInGame(UUID uuid) {
-		for(Integer i=0;i<games.size();i++) {
+		for(int i=0;i<games.size();i++) {
 			Game game = games.get(i);
-			for(Integer b=0;i<game.players.size();i++) {
+			for(int b=0;b<game.players.size();b++) {
 				if(game.players.get(b).getPlayer().getUniqueId() == uuid) {
 					return true;
 				}
@@ -87,7 +88,7 @@ public class GameManager {
 	}
 	
 	public static boolean playerIsInGameUserList(UUID uuid) {
-		for(Integer i=0;i<games.size();i++) {
+		for(int i=0;i<games.size();i++) {
 			Game game = games.get(i);
 			for(UUID id : game.users) {
 				if(uuid == id) {
@@ -99,7 +100,7 @@ public class GameManager {
 	}
 	
 	public static boolean worldIsGameWorld(World world) {
-		for(Integer i=0;i<games.size();i++) {
+		for(int i=0;i<games.size();i++) {
 			Game game = games.get(i);
 			if(game.world == world) {
 				return true;
@@ -109,7 +110,7 @@ public class GameManager {
 	}
 	
 	public static boolean changePlayerRole(UUID uuid,Role role) {
-		for(Integer i=0;i<games.size();i++) {
+		for(int i=0;i<games.size();i++) {
 			Game game = games.get(i);
 			if(game.players.get(uuid) != null) {
 				game.players.remove(uuid);
@@ -121,7 +122,7 @@ public class GameManager {
 	}
 	
 	public static Game getGameByPlayerUUID(UUID uuid) {
-		for(Integer i=0;i<games.size();i++) {
+		for(int i=0;i<games.size();i++) {
 			Game game = games.get(i);
 			for(UUID id : game.users) {
 				if(id == uuid) {
@@ -133,7 +134,7 @@ public class GameManager {
 	}
 	
 	public static Game getOpenGame() {
-		for(Integer i=0;i<games.size();i++) {
+		for(int i=0;i<games.size();i++) {
 			Game game = games.get(i);
 			if(game.ingame != true) {
 				return game;

@@ -60,6 +60,9 @@ public class EventListener implements Listener {
 	
 	@EventHandler
 	public void interactEvent(PlayerInteractEvent e) {
+		if (e.getClickedBlock() == null) {
+			return;
+		}
 		if(GameManager.playerIsInGame(e.getPlayer().getUniqueId())) {
 			if(e.getClickedBlock().getType() == Material.CAULDRON) {
 				Player player = e.getPlayer();
@@ -79,7 +82,7 @@ public class EventListener implements Listener {
 			} else {
 				e.setCancelled(true);
 			}
-		} else if(e.getClickedBlock() instanceof Sign) {
+		} else if(e.getClickedBlock().getType() == Material.WALL_SIGN || e.getClickedBlock().getType() == Material.SIGN_POST) {
 			Sign sign = (Sign) e.getClickedBlock().getState();
 			if(sign.getLine(0).equalsIgnoreCase(ChatColor.RED+"[Murder]")){
 				Game game = GameManager.getOpenGame();
