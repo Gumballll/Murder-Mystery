@@ -38,6 +38,13 @@ public class Game {
 		this.maxplayers = maxplayers;
 	}
 	
+	public void killPlayer(UUID uuid) {
+		Player player = Bukkit.getPlayer(uuid);
+		players.remove(uuid);
+		players.put(uuid, new GamePlayer(new Dead(),player));
+		player.setGameMode(GameMode.SPECTATOR);
+	}
+	
 	public boolean addUser(UUID id) {
 		if(users.size() < maxplayers) {
 			if(!users.contains(id)) {
