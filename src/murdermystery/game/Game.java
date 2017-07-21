@@ -39,11 +39,14 @@ public class Game {
 		this.maxplayers = maxplayers;
 	}
 	
-	public void killPlayer(UUID uuid) {
-		Player player = Bukkit.getServer().getPlayer(uuid);
-		players.remove(uuid);
-		players.put(uuid, new GamePlayer(new Dead(),player));
-		player.setGameMode(GameMode.SPECTATOR);
+		public boolean allPlayersAreDead() {
+		for(UUID uuid : users) {
+			GamePlayer gp = players.get(uuid);
+			if(gp.getRole().getRoleType() == Role.Type.DETECTIVE || gp.getRole().getRoleType() == Role.Type.INNOCENT) {
+				return false; //Detects if everyone BUT the murderer is dead.
+			}
+		}
+		return true;
 	}
 	
 	public void removePlayer(UUID uuid) {
@@ -99,20 +102,17 @@ public class Game {
 		HashMap<UUID,GamePlayer> rolegen = new HashMap<UUID,GamePlayer>();
 		
 		for(UUID uuid : users) {
-			GamePlayer gp = new GamePlayer(new Innocent(),Bukkit.getServer().getPlayer(uuid));
+			GamePlayer gp = new GamePlayer(new Innocent(),Bukkit.getPlayer(uuid));
 			rolegen.put(uuid, gp);
-			gp.getPlayer().sendMessage(Integer.toString(users.size()));
 		}
 		
-		
-		
 		Integer dIndex = random.nextInt(users.size()-1);
-		Player detective = Bukkit.getServer().getPlayer(users.get(dIndex));
+		Player detective = Bukkit.getPlayer(users.get(dIndex));
 		users.remove(detective.getUniqueId());
 		
 		Integer userSize = users.size() == 1 ? 2 : users.size();
 		Integer mIndex = random.nextInt(userSize-1);
-		Player murderer = Bukkit.getServer().getPlayer(users.get(mIndex));
+		Player murderer = Bukkit.getPlayer(users.get(mIndex));
 		users.add(users.size(),detective.getUniqueId());
 		
 		rolegen.remove(users.get(mIndex));
@@ -130,29 +130,36 @@ public class Game {
 		
 		Location loc = new Location(world,map.startPoint[0],map.startPoint[1],map.startPoint[2]);
 		for(UUID uuid : users) {
-			Bukkit.getServer().getPlayer(uuid).teleport(loc);
+			Player player = Bukkit.getPlayer(uuid);
+			player.sendMessage(ChatColor.GREEN+"The game will start in ten seconds!");
+			player.playSound(player.getLocation(), Sound.BLOCK_NOTE_HAT, 100, 8);
 		}
 		
-		for(UUID uuid : users) {
-			Bukkit.getServer().getPlayer(uuid).sendMessage(ChatColor.GREEN+"The game is now starting!");
-			Bukkit.getServer().getPlayer(uuid).sendMessage(users.toString());
-			Bukkit.getServer().getPlayer(uuid).setGameMode(GameMode.ADVENTURE);
-		}
-		
-		murderer.getInventory().setHeldItemSlot(1);
-		murderer.getInventory().addItem(new ItemStack(Material.IRON_SWORD,1));
-		detective.getInventory().addItem(new ItemStack(Material.BOW,1));
-		detective.getInventory().addItem(new ItemStack(Material.ARROW,1));
-	}
-	
-	public void teleportUsersToStart() {
-	}
-	
-	public void movePlayerToSpectator(UUID id) {
-		if(players.containsKey(id)) {
-			players.remove(id);
-			spectators.add(id);
-		}
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				for(UUID uuid : users) {
+					Player player = Bukkit.getPlayer(uuid);
+					player.sendMessage(ChatColor.GREEN+"The game is now starting!");
+					player.playSound(player.getLocation(), Sound.BLOCK_NOTE_HAT, 100, 8);
+					player.teleport(loc);
+				}
+				
+				ItemStack bow = new ItemStack(Material.BOW,1);
+				ItemMeta meta = bow.getItemMeta();
+				meta.setDisplayName("§r§3Detective's Bow");
+				bow.setItemMeta(meta);
+				
+				ItemStack knife = new ItemStack(Material.IRON_SWORD,1);
+				meta = knife.getItemMeta();
+				meta.setDisplayName("§r§c§lKnife");
+				
+				murderer.getInventory().setHeldItemSlot(1);
+				murderer.getInventory().addItem(knife);
+				detective.getInventory().addItem(bow);
+				detective.getInventory().addItem(new ItemStack(Material.ARROW,1));
+			}
+		}.runTaskLater(Main.self, 20*10); //20 ticks in a second. 200 ticks = 10 seconds.
 	}
 	
 	public ArrayList<UUID> getUsers() {
