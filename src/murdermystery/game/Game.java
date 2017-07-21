@@ -46,6 +46,15 @@ public class Game {
 		player.setGameMode(GameMode.SPECTATOR);
 	}
 	
+	public void removePlayer(UUID uuid) {
+		if(users.contains(uuid)) {
+		users.remove(uuid);
+		}
+		if(players.containsKey(uuid)) {
+			players.remove(uuid);
+		}
+	}
+	
 	public boolean addUser(UUID id) {
 		if(users.size() < maxplayers) {
 			if(!users.contains(id)) {

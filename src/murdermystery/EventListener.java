@@ -52,6 +52,14 @@ public class EventListener implements Listener {
 	}
 	
 	@EventHandler
+	public void playerChangeWorld(PlayerChangedWorldEvent e) {
+		if(GameManager.playerIsInGame(e.getPlayer().getUniqueId())) {
+			Game game = GameManager.getGameByPlayerUUID(e.getPlayer().getUniqueId());
+			game.removePlayer(e.getPlayer().getUniqueId());
+		}
+	}
+	
+	@EventHandler
 	public void blockBreak(BlockBreakEvent e) {
 		if(GameManager.playerIsInGame(e.getPlayer().getUniqueId())) {
 			e.setCancelled(true);
