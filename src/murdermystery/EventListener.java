@@ -118,11 +118,15 @@ public class EventListener implements Listener {
 		if(e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
 			Player damager = (Player) e.getDamager();
 			Player damaged = (Player) e.getEntity();
-			if(GameManager.playerIsInGame(damaged.getUniqueId())) {
-				Role damagerRole = GameManager.getPlayerRoleByUUID(damager.getUniqueId());
+			damager.sendMessage("kk");
+			Role damagerRole = GameManager.getPlayerRoleByUUID(damager.getUniqueId());
+			if(damagerRole != null) {
+				damager.sendMessage("ok");
 				if(damagerRole.getRoleType() == Role.Type.MURDERER) {
+					damager.sendMessage("ay");
 					Role damagedRole = GameManager.getPlayerRoleByUUID(damaged.getUniqueId());
 					if(damager.getInventory().getItemInMainHand().getType() == Material.IRON_SWORD && damagedRole.getRoleName() != "Dead") {
+						damager.sendMessage("alright boi");
 						Game game = GameManager.getGameByPlayerUUID(damaged.getUniqueId());
 						game.killPlayer(damaged.getUniqueId());
 						damaged.sendTitle(ChatColor.RED+"You died!",ChatColor.RED+"The murderer killed you!",20,100,20);
@@ -153,7 +157,8 @@ public class EventListener implements Listener {
 							Game game = GameManager.getGameByPlayerUUID(damaged.getUniqueId());
 							game.killPlayer(damaged.getUniqueId());
 							damaged.sendTitle(ChatColor.RED+"You died!", ChatColor.AQUA+"The detective shot you!",20,100,20);
-							shooter.sendTitle(ChatColor.GREEN+"You killed the "+ChatColor.RED+"Murderer!","",20,100,20);
+							shooter.sendTitle(ChatColor.YELLOW+"You killed the "+ChatColor.RED+"Murderer!","",20,100,20);
+							game.gameEnd("      §aInnocent");
 						}
 					}
 				}
