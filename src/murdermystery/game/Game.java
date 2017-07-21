@@ -5,6 +5,13 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
 
+import murdermystery.maps.Map;
+import murdermystery.roles.Dead;
+import murdermystery.roles.Detective;
+import murdermystery.roles.Innocent;
+import murdermystery.roles.Murderer;
+import murdermystery.roles.Role;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -13,12 +20,6 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import murdermystery.maps.Map;
-import murdermystery.roles.Detective;
-import murdermystery.roles.Innocent;
-import murdermystery.roles.Murderer;
-import murdermystery.roles.Role;
 
 public class Game {
 	public HashMap<UUID,GamePlayer> players = new HashMap<UUID,GamePlayer>();
@@ -39,7 +40,7 @@ public class Game {
 	}
 	
 	public void killPlayer(UUID uuid) {
-		Player player = Bukkit.getPlayer(uuid);
+		Player player = Bukkit.getServer().getPlayer(uuid);
 		players.remove(uuid);
 		players.put(uuid, new GamePlayer(new Dead(),player));
 		player.setGameMode(GameMode.SPECTATOR);
@@ -59,19 +60,19 @@ public class Game {
 			if(!users.contains(id)) {
 				users.add(id);
 				for(UUID uuid : users) {
-					Bukkit.getPlayer(uuid).sendMessage(ChatColor.GOLD+Bukkit.getPlayer(id).getName()+" has joined the game! "+users.size()+"/"+maxplayers);
+					Bukkit.getServer().getPlayer(uuid).sendMessage(ChatColor.GOLD+Bukkit.getServer().getPlayer(id).getName()+" has joined the game! "+users.size()+"/"+maxplayers);
 				}
 				Location loc = new Location(world,map.spawnPoint[0],map.spawnPoint[1],map.spawnPoint[2]);
-				Bukkit.getPlayer(id).teleport(loc);
-				Bukkit.getPlayer(id).sendMessage(ChatColor.LIGHT_PURPLE+"Teleporting you to a game...");
-				Bukkit.getPlayer(id).setGameMode(GameMode.ADVENTURE);
-				Bukkit.getPlayer(id).getInventory().clear();
+				Bukkit.getServer().getPlayer(id).teleport(loc);
+				Bukkit.getServer().getPlayer(id).sendMessage(ChatColor.LIGHT_PURPLE+"Teleporting you to a game...");
+				Bukkit.getServer().getPlayer(id).setGameMode(GameMode.ADVENTURE);
+				Bukkit.getServer().getPlayer(id).getInventory().clear();
 				if(users.size() == maxplayers) {
 					startGame();
 				}
 				return true;
 			} else {
-				Bukkit.getPlayer(id).sendMessage(ChatColor.RED+"You are already in that game!");
+				Bukkit.getServer().getPlayer(id).sendMessage(ChatColor.RED+"You are already in that game!");
 				return false;
 			}
 		} else {
@@ -98,7 +99,7 @@ public class Game {
 		HashMap<UUID,GamePlayer> rolegen = new HashMap<UUID,GamePlayer>();
 		
 		for(UUID uuid : users) {
-			GamePlayer gp = new GamePlayer(new Innocent(),Bukkit.getPlayer(uuid));
+			GamePlayer gp = new GamePlayer(new Innocent(),Bukkit.getServer().getPlayer(uuid));
 			rolegen.put(uuid, gp);
 			gp.getPlayer().sendMessage(Integer.toString(users.size()));
 		}
@@ -106,12 +107,12 @@ public class Game {
 		
 		
 		Integer dIndex = random.nextInt(users.size()-1);
-		Player detective = Bukkit.getPlayer(users.get(dIndex));
+		Player detective = Bukkit.getServer().getPlayer(users.get(dIndex));
 		users.remove(detective.getUniqueId());
 		
 		Integer userSize = users.size() == 1 ? 2 : users.size();
 		Integer mIndex = random.nextInt(userSize-1);
-		Player murderer = Bukkit.getPlayer(users.get(mIndex));
+		Player murderer = Bukkit.getServer().getPlayer(users.get(mIndex));
 		users.add(users.size(),detective.getUniqueId());
 		
 		rolegen.remove(users.get(mIndex));
@@ -129,15 +130,16 @@ public class Game {
 		
 		Location loc = new Location(world,map.startPoint[0],map.startPoint[1],map.startPoint[2]);
 		for(UUID uuid : users) {
-			Bukkit.getPlayer(uuid).teleport(loc);
+			Bukkit.getServer().getPlayer(uuid).teleport(loc);
 		}
 		
 		for(UUID uuid : users) {
-			Bukkit.getPlayer(uuid).sendMessage(ChatColor.GREEN+"The game is now starting!");
-			Bukkit.getPlayer(uuid).sendMessage(users.toString());
-			Bukkit.getPlayer(uuid).setGameMode(GameMode.ADVENTURE);
+			Bukkit.getServer().getPlayer(uuid).sendMessage(ChatColor.GREEN+"The game is now starting!");
+			Bukkit.getServer().getPlayer(uuid).sendMessage(users.toString());
+			Bukkit.getServer().getPlayer(uuid).setGameMode(GameMode.ADVENTURE);
 		}
 		
+		murderer.getInventory().setHeldItemSlot(1);
 		murderer.getInventory().addItem(new ItemStack(Material.IRON_SWORD,1));
 		detective.getInventory().addItem(new ItemStack(Material.BOW,1));
 		detective.getInventory().addItem(new ItemStack(Material.ARROW,1));

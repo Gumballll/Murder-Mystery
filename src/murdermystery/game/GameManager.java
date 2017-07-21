@@ -46,6 +46,8 @@ public class GameManager {
 			Bukkit.getLogger().log(Level.WARNING, "bad");
 		}
 		World world = Bukkit.getServer().createWorld(new WorldCreator(mapname));
+		world.setMonsterSpawnLimit(0);
+		world.setAmbientSpawnLimit(0);
 		Game game = new Game(map,gameID,world,Main.maxgamesize);
 		games.put(gameID, game);
 		return game;
@@ -76,10 +78,19 @@ public class GameManager {
 	}
 	
 	public static boolean playerIsInGame(UUID uuid) {
+		if (uuid == null) {
+			return false;
+		}
+		if (games == null || games.isEmpty()) {
+			return false;
+		}
 		for(int i=0;i<games.size();i++) {
 			Game game = games.get(i);
-			for(int b=0;b<game.players.size();b++) {
-				if(game.players.get(b).getPlayer().getUniqueId() == uuid) {
+			if (game.players == null || game.players.isEmpty()) {
+				continue;
+			}
+			for(GamePlayer gPlayer : game.players.values()) {
+				if(gPlayer.getPlayer().getUniqueId() == uuid) {
 					return true;
 				}
 			}
@@ -114,7 +125,7 @@ public class GameManager {
 			Game game = games.get(i);
 			if(game.players.get(uuid) != null) {
 				game.players.remove(uuid);
-				game.players.put(uuid, new GamePlayer(role,Bukkit.getPlayer(uuid)));
+				game.players.put(uuid, new GamePlayer(role,Bukkit.getServer().getPlayer(uuid)));
 				return true;
 			}
 		}
