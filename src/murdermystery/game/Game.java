@@ -58,6 +58,48 @@ public class Game {
 		}
 	}
 	
+	public void killPlayer(UUID uuid) {
+		Player player = Bukkit.getPlayer(uuid);
+		players.remove(uuid);
+		players.put(uuid, new GamePlayer(new Dead(),player));
+		player.setGameMode(GameMode.SPECTATOR);
+		if(allPlayersAreDead()) {
+			gameEnd("    §c§lMurderer");
+		}
+	}
+	
+	public void gameEnd(String winner) {
+		for(UUID uuid : users) {
+			Player player = Bukkit.getPlayer(uuid);
+			player.sendMessage("§e====================");
+			player.sendMessage("");
+			player.sendMessage("      §aGame End");
+			player.sendMessage("       §6Winner:");
+			player.sendMessage(winner);
+			player.sendMessage("");
+			player.sendMessage("§e====================");
+		}
+		
+		new BukkitRunnable() {
+            @Override
+            public void run() {
+                Location loc = Main.gamelobby.getSpawnLocation();
+                for(UUID uuid : users) {
+                	Player player = Bukkit.getPlayer(uuid);
+                	player.getInventory().clear();
+                	player.teleport(loc);
+                	player.setGameMode(GameMode.SURVIVAL);
+                }
+                Bukkit.unloadWorld(world, false);
+                try {
+                	FileUtils.forceDelete(world.getWorldFolder());
+                } catch(IOException e) {
+                	
+                }
+            }
+		}.runTaskLater(Main.self, 20*10);
+	}
+	
 	public boolean addUser(UUID id) {
 		if(users.size() < maxplayers) {
 			if(!users.contains(id)) {
