@@ -13,6 +13,7 @@ import murdermystery.roles.Role;
 
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Difficulty;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 
@@ -46,6 +47,8 @@ public class GameManager {
 			Bukkit.getLogger().log(Level.WARNING, "bad");
 		}
 		World world = Bukkit.getServer().createWorld(new WorldCreator(mapname));
+		world.setMonsterSpawnLimit(0);
+		world.setAmbientSpawnLimit(0);
 		Game game = new Game(map,gameID,world,Main.maxgamesize);
 		games.put(gameID, game);
 		return game;
