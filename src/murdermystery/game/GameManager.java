@@ -13,7 +13,6 @@ import murdermystery.roles.Role;
 
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Difficulty;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 
