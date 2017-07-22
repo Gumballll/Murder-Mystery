@@ -175,7 +175,7 @@ public class Game {
 			GamePlayer gp = new GamePlayer(new Innocent(),Bukkit.getPlayer(uuid));
 			rolegen.put(uuid, gp);
 		}
-
+    
 		Integer dIndex = random.nextInt(users.size()-1);
 		Player detective = Bukkit.getPlayer(users.get(dIndex));
 		users.remove(detective.getUniqueId());
@@ -214,7 +214,7 @@ public class Game {
 					player.playSound(player.getLocation(), Sound.BLOCK_NOTE_HAT, 100, 8);
 					player.teleport(loc);
 				}
-
+        
 				ItemStack bow = new ItemStack(Material.BOW,1);
 				ItemMeta meta = bow.getItemMeta();
 				meta.setDisplayName("§r§3Detective's Bow");
