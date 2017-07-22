@@ -117,6 +117,10 @@ public class EventListener implements Listener {
 		} else if(e.getClickedBlock().getType() == Material.WALL_SIGN || e.getClickedBlock().getType() == Material.SIGN_POST) {
 			Sign sign = (Sign) e.getClickedBlock().getState();
 			if(sign.getLine(0).equalsIgnoreCase(ChatColor.RED+"[Murder]")){
+				if (GameManager.playerIsInGame(e.getPlayer().getUniqueId())) {
+					e.getPlayer().sendMessage(ChatColor.RED+"You're already in a game.");
+					return;
+				}
 				Game game = GameManager.getOpenGame();
 				if(game != null) {
 					game.addUser(e.getPlayer().getUniqueId());
