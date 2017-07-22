@@ -17,6 +17,7 @@ import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -211,6 +212,11 @@ public class EventListener implements Listener {
 						shooter.getInventory().addItem(new ItemStack(Material.ARROW,1));
 					}
 				}
+			}
+		} else if (e.getDamager() instanceof Firework && e.getEntity() instanceof Player) {
+			Player player = (Player) e.getEntity();
+			if (GameManager.playerIsInGame(player.getUniqueId())) {
+				e.setCancelled(true);
 			}
 		}
 	}
