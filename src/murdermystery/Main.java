@@ -24,7 +24,7 @@ public class Main extends JavaPlugin {
 		saveDefaultConfig();
 		Main.serverPath = getConfig().getString("serverpath");
 		Main.maxgamesize = getConfig().getInt("gamesize");
-		Main.gamelobby = Bukkit.getWorld(getConfig().getString("gamelobby"));
+		Main.gamelobby = Bukkit.getWorld(getConfig().getString("gamelobby", "world"));
 		if(serverPath == "default") {
 			Bukkit.getLogger().log(Level.SEVERE, "You must set the root path of the server in order to use Murder Mystery! Murder Mystery has been disabled.");
 			Bukkit.getServer().getPluginManager().disablePlugin(this);
