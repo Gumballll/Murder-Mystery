@@ -8,9 +8,13 @@ import murdermystery.game.Game;
 import murdermystery.game.GameManager;
 import murdermystery.roles.Role;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
@@ -20,9 +24,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -32,7 +38,6 @@ import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
 
 public class EventListener implements Listener {
-	
 	public Random r = new Random();
 	
 	public static final ArrayList<PotionType> potions = new ArrayList<PotionType>();
@@ -50,6 +55,23 @@ public class EventListener implements Listener {
 	@EventHandler
 	public void teleportEvent(PlayerTeleportEvent e) {
 		
+	}
+	
+	@EventHandler
+	public void onLeave(PlayerQuitEvent e) {
+		Player player = e.getPlayer();
+		Game game = GameManager.getGameByPlayerUUID(player.getUniqueId());
+		if (game != null) {
+			game.removePlayer(player.getUniqueId());
+		}
+		World world = Main.gamelobby;
+		if (world == null) {
+			world = Bukkit.getServer().getWorlds().get(0);
+		}
+		double x = world.getSpawnLocation().getX();
+		double y = world.getSpawnLocation().getY();
+		double z = world.getSpawnLocation().getZ();
+		player.teleport(new Location(world, x, y, z));
 	}
 	
 	@EventHandler
@@ -114,20 +136,35 @@ public class EventListener implements Listener {
 	}
 	
 	@EventHandler
+	public void entityDeathEvent(EntityDeathEvent e) {
+		if (e.getEntity() instanceof Player) {
+			Player player = (Player) e.getEntity();
+			if (GameManager.playerIsInGame(player.getUniqueId())) {
+				Game game = GameManager.getGameByPlayerUUID(player.getUniqueId());
+				if (game != null && game.ingame) {
+					player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+				}
+			}
+		}
+	}
+	
+	@EventHandler
 	public void entityDamageEntity(EntityDamageByEntityEvent e) {
 		if(e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
 			Player damager = (Player) e.getDamager();
 			Player damaged = (Player) e.getEntity();
-			damager.sendMessage("kk");
 			Role damagerRole = GameManager.getPlayerRoleByUUID(damager.getUniqueId());
-			if(damagerRole != null) {
-				damager.sendMessage("ok");
+			Role damagedRole = GameManager.getPlayerRoleByUUID(damaged.getUniqueId());
+			if(damagerRole != null && damagedRole != null) {
+				Game game = GameManager.getGameByPlayerUUID(damaged.getUniqueId());
+				if (game == null) {
+					return;
+				} else if (!game.isPlaying()) {
+					e.setCancelled(true);
+					return;
+				}
 				if(damagerRole.getRoleType() == Role.Type.MURDERER) {
-					damager.sendMessage("ay");
-					Role damagedRole = GameManager.getPlayerRoleByUUID(damaged.getUniqueId());
-					if(damager.getInventory().getItemInMainHand().getType() == Material.IRON_SWORD && damagedRole.getRoleName() != "Dead") {
-						damager.sendMessage("alright boi");
-						Game game = GameManager.getGameByPlayerUUID(damaged.getUniqueId());
+					if(damager.getInventory().getItemInMainHand().getType() == Material.IRON_SWORD && damagedRole.getRoleType() != Role.Type.DEAD) {
 						game.killPlayer(damaged.getUniqueId());
 						damaged.sendTitle(ChatColor.RED+"You died!",ChatColor.RED+"The murderer killed you!",20,100,20);
 					}
@@ -141,25 +178,37 @@ public class EventListener implements Listener {
 				Role shooterRole = GameManager.getPlayerRoleByUUID(shooter.getUniqueId());
 				Player damaged = (Player) e.getEntity();
 				Role damagedRole = GameManager.getPlayerRoleByUUID(damaged.getUniqueId());
-				if(shooterRole != null) {
+				if(shooterRole != null && damagedRole != null) {
 					if(shooterRole.getRoleType() == Role.Type.DETECTIVE) {
 						//Detective shot an arrow
-						shooter.getInventory().addItem(new ItemStack(Material.ARROW,1));
 						if(damagedRole.getRoleType() == Role.Type.INNOCENT) {
 							//Detective shot an innocent
 							
 							Game game = GameManager.getGameByPlayerUUID(shooter.getUniqueId());
+							if (game == null) {
+								return;
+							} else if (!game.isPlaying()) {
+								e.setCancelled(true);
+								return;
+							}
 							game.killPlayer(shooter.getUniqueId());
 							shooter.sendTitle(ChatColor.RED+"You died!", ChatColor.GREEN+"You killed an innocent!",20,100,20);
 							game.killPlayer(damaged.getUniqueId());
 							damaged.sendTitle(ChatColor.RED+"You died!",ChatColor.AQUA+"The Detective mistook you for the "+ChatColor.RED+"Murderer!",20,100,20);
 						} else if(damagedRole.getRoleType() == Role.Type.MURDERER) {
 							Game game = GameManager.getGameByPlayerUUID(damaged.getUniqueId());
+							if (game == null) {
+								return;
+							} else if (!game.isPlaying()) {
+								e.setCancelled(true);
+								return;
+							}
 							game.killPlayer(damaged.getUniqueId());
 							damaged.sendTitle(ChatColor.RED+"You died!", ChatColor.AQUA+"The detective shot you!",20,100,20);
 							shooter.sendTitle(ChatColor.YELLOW+"You killed the "+ChatColor.RED+"Murderer!","",20,100,20);
-							game.gameEnd("      §aInnocent");
+							game.gameEnd("§aInnocent");
 						}
+						shooter.getInventory().addItem(new ItemStack(Material.ARROW,1));
 					}
 				}
 			}
