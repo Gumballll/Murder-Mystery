@@ -12,6 +12,7 @@ import murdermystery.roles.Detective;
 import murdermystery.roles.Innocent;
 import murdermystery.roles.Murderer;
 import murdermystery.roles.Role;
+import net.minecraft.server.v1_12_R1.EntityFireworks;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -23,7 +24,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
-import org.bukkit.entity.EntityType;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftFirework;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -82,11 +83,14 @@ public class Game {
 			gameEnd("§c§lMurderer");
 			for (GamePlayer pl : players.values()) {
 				if (pl.getRole().getRoleType() == Role.Type.MURDERER) {
-					Firework fw = (Firework) pl.getPlayer().getWorld().spawnEntity(pl.getPlayer().getLocation(), EntityType.FIREWORK);
-					FireworkEffect fireworkEffect = FireworkEffect.builder().withColor(Color.RED).with(Type.BALL).build();
+					Firework fw = pl.getPlayer().getWorld().spawn(pl.getPlayer().getLocation(), Firework.class);
 					FireworkMeta meta = fw.getFireworkMeta();
-					meta.setPower(0);
+					FireworkEffect fireworkEffect = FireworkEffect.builder().withColor(Color.RED).with(Type.BALL).build();
 					meta.addEffect(fireworkEffect);
+					fw.setFireworkMeta(meta);
+					
+					EntityFireworks entFire = ((CraftFirework) fw).getHandle();
+					entFire.expectedLifespan = 4;
 				}
 			}
 		}
@@ -175,7 +179,7 @@ public class Game {
 			GamePlayer gp = new GamePlayer(new Innocent(),Bukkit.getPlayer(uuid));
 			rolegen.put(uuid, gp);
 		}
-    
+
 		Integer dIndex = random.nextInt(users.size()-1);
 		Player detective = Bukkit.getPlayer(users.get(dIndex));
 		users.remove(detective.getUniqueId());
@@ -214,7 +218,7 @@ public class Game {
 					player.playSound(player.getLocation(), Sound.BLOCK_NOTE_HAT, 100, 8);
 					player.teleport(loc);
 				}
-        
+
 				ItemStack bow = new ItemStack(Material.BOW,1);
 				ItemMeta meta = bow.getItemMeta();
 				meta.setDisplayName("§r§3Detective's Bow");
